@@ -1,11 +1,13 @@
 package com.kry.servicepollerserver.controller;
 
 import com.kry.servicepollerserver.model.ServiceReference;
+import com.kry.servicepollerserver.model.StatusEvent;
 import com.kry.servicepollerserver.service.ServiceReferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,8 +62,9 @@ public class ServiceReferenceController {
     }
 
     @GetMapping(value = "/sse/status", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> getServiceStatuses() {
-        return Flux.interval(Duration.ofSeconds(5))
-                .map(val -> "OK");
+    @CrossOrigin(origins = "http://localhost:3000")
+    public Flux<StatusEvent> getServiceStatuses() {
+        // TODO: here you should replace with a service that will use WebClient to fetch status from real services
+        return getAllServices().flatMap(serviceReference -> Flux.just(new StatusEvent(serviceReference.getId(), "OK")));
     }
 }
