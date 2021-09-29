@@ -1,0 +1,29 @@
+version: '3'
+services:
+    server-application:
+        container_name: "service-poller-server"
+        build: 
+            dockerfile: Dockerfile
+            context: ./service-poller-server 
+        depends_on:
+            - mongodb
+        ports:
+          - 8080:8080
+    client-application:
+        container_name: "service-poller-client"
+        restart: always
+        build: 
+          dockerfile: Dockerfile
+          context: ./service-poller-client
+        ports: 
+          - 3000:3000
+    mongodb:
+        container_name: "mongodb"
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        volumes:
+          - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
